@@ -1,0 +1,89 @@
+http:
+  port: 8080
+admin:
+  port: 9876
+  host: localhost
+apiEndpoints:
+  apiRepartidor:
+    host: localhost
+    paths: 
+      - '/'
+      - '/repartidores/registrarRepartidor'
+      - '/repartidores/obtenerRepartidores'
+      - '/repartidores/verPedidosRepartidor/:idRepartidor'
+  apiCliente:
+    host: localhost
+    paths: 
+      - '/repartidores/obtenerRepartidores'
+      - '/users/'
+      - '/clientes/registrarCliente'
+      - '/clientes/iniciarSesion/:correoElectronico/:contrasenia'
+      - '/clientes/editarPerfil/:idCliente'
+      - '/clientes/actualizarContrasenia'
+      - '/clientes/verPedidosCliente/:idCliente'
+      - '/clientes/verDetallesCliente/:idCliente'
+      - '/pedidos/realizarPedido'
+      - '/pedidos/posponerEntrega'
+      - '/pedidos/cambiarEstado'
+      - '/pedidos/asignarPedido'
+      - '/pedidos/verDetallePedido/:idPedido'
+      - '/pedidos/verPedidosPorEstado/:estado'
+      - '/pedidos/getAllPedidos'
+
+
+  apiAdmin:
+    host: localhost
+    paths: 
+      - '/administrador/registrarAdministrador/'
+      - '/administrador/iniciarSesion/:correoElectronico/:contrasenia/'
+      - '/administrador/editarPerfil/:idAdministrador/'
+      - '/administrador/actualizarContrasenia/'
+      - '/estados/verEstado/:idEstado'
+      
+serviceEndpoints:
+  repartidorservicesEndpoints:
+    url: 'http://3.82.75.145:80'
+  clienteservicesEndpoints:
+    url: 'http://3.82.75.145:80'
+  administradorservicesEndpoints:
+    url: 'http://3.82.75.145:80'
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+pipelines:
+  repartidopipeline:
+    apiEndpoints:
+      - apiRepartidor
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy: 
+          - action:
+              serviceEndpoint: repartidorservicesEndpoints 
+              changeOrigin: true
+  clientepipeline:
+    apiEndpoints:
+      - apiCliente
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy: 
+          - action:
+              serviceEndpoint: clienteservicesEndpoints 
+              changeOrigin: true
+  administradorpipeline:
+    apiEndpoints:
+      - apiAdmin
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy: 
+          - action:
+              serviceEndpoint: administradorservicesEndpoints 
+              changeOrigin: true
